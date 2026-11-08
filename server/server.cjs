@@ -303,6 +303,27 @@ const SWITCH = {
   //   管家界面左下鲸鱼按钮 (42,954) → 弹出菜单；菜单里「切换经典 Agent 模式」在 (90,862)
   dsbot: { label: "大管家", open: ["-a", "DeepSeek Harness"], enter: { x: 120, y: 210 } },
 };
+
+// ── 用户配置（可选）────────────────────────────────────────────────
+// 三个 agent 键默认指向**开发机上的三个应用**（见上面 SWITCH）。别人想用，不必改代码：
+//   ~/.dsh/phone-remote.json
+//   {
+//     "switch": { "dsbot": { "label": "大管家", "open": ["-a", "DeepSeek Harness"],
+//                            "enter": { "x": 120, "y": 210 } } },
+//     "apps":   { "cc": { "label": "Claude Code", "cmd": "claude" } }
+//   }
+// 只写想覆盖的项，其余保持默认。
+const CONFIG_FILE = path.join(os.homedir(), ".dsh", "phone-remote.json");
+try {
+  const cfg = JSON.parse(fs.readFileSync(CONFIG_FILE, "utf8"));
+  if (cfg && typeof cfg === "object") {
+    if (cfg.switch && typeof cfg.switch === "object") Object.assign(SWITCH, cfg.switch);
+    if (cfg.apps && typeof cfg.apps === "object") Object.assign(APPS, cfg.apps);
+    console.log("[config] 已应用 " + CONFIG_FILE);
+  }
+} catch (e) {
+  if (e && e.code !== "ENOENT") console.log("[config] 读取失败（忽略）：" + e.message);
+}
 // 原生全屏快捷键：比 AppleScript 的 zoomed 可靠（Electron 窗口不响应 set bounds 全屏）
 const FULLSCREEN = { code: 3, char: "f", mods: ["ctrl", "cmd"] };
 

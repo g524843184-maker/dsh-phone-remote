@@ -174,7 +174,52 @@ TCC 授权给的是 **DeepSeek Harness.app**（不是 node、不是终端）。
 
 ---
 
-## 七、想加功能的话
+## 七、适配别人的环境（重要）
+
+`SWITCH` 里的三个 agent 键是**开发机专属**的硬编码默认值：
+
+```js
+const SWITCH = {
+  dsh:    { label: "大聪明", open: ["-a", "DeepSeek Harness"] },
+  hermes: { label: "小聪明", open: [HERMES_APP] },          // 我自己的 Hermes.app
+  dsbot:  { label: "大管家", open: ["-a", "DeepSeek Harness"], enter: { x: 120, y: 210 } },
+};
+```
+
+- **小聪明** 指向 `Hermes.app`，绝大多数机器上没有
+- **大管家** 的 `enter` 是**坐标点击**（`x,y`），量的是我自己的窗口尺寸（全屏 1512×945 下的侧边栏第一项）；
+  换了机器、换了分辨率、DSH 布局一改，坐标就点偏（我实测点偏过一次，点到了「新会话」，凭空建了个对话）
+
+所以**不要**让使用者去改代码，走配置文件：
+
+```sh
+~/.dsh/phone-remote.json
+```
+
+```json
+{
+  "switch": { "dsh": { "label": "我的助手", "open": ["-a", "YourApp"] } },
+  "apps":   { "cc":  { "label": "Claude Code", "cmd": "claude" } }
+}
+```
+
+加载逻辑在 `server.cjs` 的 `CONFIG_FILE` 处：`Object.assign(SWITCH, cfg.switch)`，
+只覆盖写了的键，其它保持默认。改完重启插件生效。
+
+> 若使用者的机器上没有「第三个 agent」，把 `switch` 里对应项删掉或改成自己的应用即可，
+> 前端按钮仍在，点了会提示未知目标，不会崩。
+
+### 除 agent 键之外，还有这些也是「开发机专属」
+
+| 项 | 位置 | 别人要改什么 |
+|---|---|---|
+| 语音代理端口 | `VOICE_PORT = 9899` | 没有本地 TTS 就不用管，语音自动降级 |
+| 语音音色 | 由语音代理决定，不在本仓库 | 与本插件无关 |
+| 大管家坐标 | `SWITCH.dsbot.enter` | 建议删除或自行量 |
+| 白名单按键 | `KEYS` | 按需增删 |
+| CLI 应用 | `APPS` | 按需增删，或用配置文件覆盖 |
+
+## 八、想加功能的话
 
 - **新按键**：`KEYS` 白名单加一项 → `/key` 直接用（前端只传 key 名，命令永不下发）
 - **新应用**：`APPS` 白名单加一项 → `/launch`
@@ -186,7 +231,7 @@ TCC 授权给的是 **DeepSeek Harness.app**（不是 node、不是终端）。
 
 ---
 
-## 八、已知限制
+## 九、已知限制
 
 | 限制 | 说明 |
 |---|---|
