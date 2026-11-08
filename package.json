@@ -1,0 +1,17 @@
+{
+  "name": "dsh-phone-remote",
+  "version": "0.1.0",
+  "description": "手机遥控器：把手机变成 Mac 的外接终端（语音输入 / 1:1 屏幕镜像 / 触控板手势 / 语音回读 / 三个 agent 一键切换）。需要 macOS「辅助功能」+「屏幕录制」两项系统权限授予 DeepSeek Harness，否则注入与镜像不可用；本地语音回读需要 127.0.0.1:9899 的语音代理（可选，没有则只有语音不可用）。",
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" }
+  },
+  "files": ["lib", "server", "cordis.patch.yml", "README.md"]
+}

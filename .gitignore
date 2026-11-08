@@ -1,0 +1,11 @@
+# 运行时生成，绝不能提交
+server/.token
+server/.voice-state.json
+server/.clip.tmp
+server/.launch.command
+.voice-state.json
+
+# 系统/编辑器
+.DS_Store
+node_modules/
+*.log
